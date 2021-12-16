@@ -8,11 +8,10 @@ public class mainClass {
         String[] read = br.readLine().split(" ");
         switch (read[0]){
             case "send":
-
-
+                FileSender.sendStringTo(read[1], Integer.parseInt(read[2]), "testMSG");
             break;
             case "rec":
-                FileReceiver revc = new FileReceiver(Integer.parseInt(read[1]));
+                FileReceiver.receiveFileFrom(Integer.parseInt(read[1]));
             break;
         }
 //https://github.com/EliasNorgren/FileTransfer.git
