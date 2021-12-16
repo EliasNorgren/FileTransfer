@@ -1,8 +1,12 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.*;
 
 public class mainClass {
 
@@ -12,10 +16,17 @@ public class mainClass {
         validateData(read);
         switch (read[0]){
             case "send":
-                FileSender.sendStringTo(read[1], Integer.parseInt(read[2]), read[3]);
+                byte[] bytes = FileDecompiler.fileToByteArray(new File(read[3]));
+                JSONObject json = new JSONObject();
+                json.put("data", Base64.getEncoder().encodeToString(bytes));
+                json.put("filename", read[3]);
+                FileSender.sendStringTo(read[1], Integer.parseInt(read[2]), json.toString());
             break;
             case "rec":
-                FileReceiver.receiveFileFrom(Integer.parseInt(read[1]));
+                String received = FileReceiver.receiveFileFrom(Integer.parseInt(read[1]));
+                JSONObject obj = new JSONObject(received);
+                System.out.println(obj.get("filename"));
+                FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), "asd.mp4");
             break;
         }
 //https://github.com/EliasNorgren/FileTransfer.git
@@ -38,7 +49,7 @@ public class mainClass {
             Pattern pattern = Pattern.compile(IPV4_PATTERN);
             Matcher matcher = pattern.matcher(read[1]);
             if(matcher.matches()){
-                throw new unvalidDataException("IPV4 has to be second argument if send. ");
+                //throw new unvalidDataException("IPV4 has to be second argument if send. ");
             }
 
         }
