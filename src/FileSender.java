@@ -5,10 +5,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class FileSender {
-    public static void sendStringTo(String hostname, int port, String msg) throws IOException {
-        Socket socket = new Socket(hostname, port);
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+    private final Socket socket;
+    private final PrintWriter out;
+
+    public FileSender(String hostname, int port) throws IOException {
+        socket = new Socket(hostname, port);
+        out = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    public void sendStringTo(String msg) {
         out.println(msg);
+    }
+
+    public void close() throws IOException {
         out.close();
         socket.close();
     }

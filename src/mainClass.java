@@ -2,31 +2,48 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.*;
-// TEST COMMENT
+
 public class mainClass {
 
     public static void main(String[] args) throws IOException, unvalidDataException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] read = br.readLine().split(" ");
         validateData(read);
+        ArrayList<File> files = new ArrayList<>();
+        files.add(new File("Kalimba.mp3"));
+        files.add(new File("Maid with the Flaxen Hair.mp3"));
+
         switch (read[0]){
             case "send":
-                byte[] bytes = FileDecompiler.fileToByteArray(new File(read[3]));
-                JSONObject json = new JSONObject();
-                json.put("data", Base64.getEncoder().encodeToString(bytes));
-                json.put("filename", read[3]);
-                FileSender.sendStringTo(read[1], Integer.parseInt(read[2]), json.toString());
+                FileSender sender = new FileSender(read[1], Integer.parseInt(read[2]));
+                for (File f : files){
+                    byte[] bytes = FileDecompiler.fileToByteArray(f);
+                    JSONObject json = new JSONObject();
+                    json.put("data", Base64.getEncoder().encodeToString(bytes));
+                    json.put("filename", read[3]);
+                    sender.sendStringTo(json.toString());
+                }
+                sender.close();
             break;
             case "rec":
-                String received = FileReceiver.receiveFileFrom(Integer.parseInt(read[1]));
-                JSONObject obj = new JSONObject(received);
-                System.out.println(obj.get("filename"));
-                FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), "asd.mp4");
+                FileReceiver receiver = new FileReceiver(Integer.parseInt(read[1]));
+
+                String received = "";
+                int i = 0;
+                while((received = receiver.receiveFileFrom()) != null){
+                    i++;
+                    JSONObject obj = new JSONObject(received);
+                    System.out.println(obj.get("filename"));
+                    FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), i+"asd.mp3");
+                }
+
+                receiver.close();
             break;
         }
 //https://github.com/EliasNorgren/FileTransfer.git
