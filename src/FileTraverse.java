@@ -7,7 +7,8 @@ public class FileTraverse {
         ArrayList<File> result = new ArrayList<>();
         File[] files = file.listFiles();
         if(files == null){
-            return null;
+            result.add(file);
+            return result;
         }
         for(File f : files){
             if(f.isDirectory()){

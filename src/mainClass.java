@@ -4,46 +4,57 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.*;
 
+import static java.lang.Thread.sleep;
+
 public class mainClass {
 
-    public static void main(String[] args) throws IOException, unvalidDataException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] read = br.readLine().split(" ");
-        validateData(read);
+    public static void main(String[] args) throws InterruptedException {
+        try{
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String[] read = br.readLine().split(" ");
+            validateData(read);
 
-        switch (read[0]){
-            case "send":
-                ArrayList<File> files = FileTraverse.traverseFiles(new File(read[3]));
-                FileSender sender = new FileSender(read[1], Integer.parseInt(read[2]));
-                for (File f : files){
-                    byte[] bytes = FileDecompiler.fileToByteArray(f);
-                    JSONObject json = new JSONObject();
-                    json.put("data", Base64.getEncoder().encodeToString(bytes));
-                    json.put("filename", f.toString());
-                    sender.sendStringTo(json.toString());
-                }
-                sender.close();
-            break;
-            case "rec":
-                FileReceiver receiver = new FileReceiver(Integer.parseInt(read[1]));
+            switch (read[0]){
+                case "send":
+                    ArrayList<File> files = FileTraverse.traverseFiles(new File(read[3]));
+                    FileSender sender = new FileSender(read[1], Integer.parseInt(read[2]));
+                    for (File f : files){
+                        byte[] bytes = FileDecompiler.fileToByteArray(f);
+                        JSONObject json = new JSONObject();
+                        json.put("data", Base64.getEncoder().encodeToString(bytes));
+                        json.put("filename", f.toString());
+                        sender.sendStringTo(json.toString());
+                    }
+                    sender.close();
+                    break;
+                case "rec":
+                    FileReceiver receiver = new FileReceiver(Integer.parseInt(read[1]));
 
-                String received = "";
-                while((received = receiver.receiveFileFrom()) != null){
-                    JSONObject obj = new JSONObject(received);
+                    String received = "";
+                    while((received = receiver.receiveFileFrom()) != null){
+                        JSONObject obj = new JSONObject(received);
 //                    System.out.println(obj.get("filename"));
-                    String fileName = (String) obj.get("filename");
-                    fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
-                    System.out.println(fileName);
-                    FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), fileName);
-                }
+                        String fileName = (String) obj.get("filename");
+                        fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+                        System.out.println(fileName);
+                        FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), fileName);
+                    }
 
-                receiver.close();
-            break;
+                    receiver.close();
+                    break;
+            }
+        } catch (unvalidDataException | IOException e) {
+            e.printStackTrace();
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
+            scanner.nextLine();
+            sleep(100000);
         }
 //https://github.com/EliasNorgren/FileTransfer.git
     }
