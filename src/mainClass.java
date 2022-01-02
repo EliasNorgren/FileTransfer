@@ -25,6 +25,7 @@ public class mainClass {
                     ArrayList<File> files = FileTraverse.traverseFiles(new File(read[3]));
                     FileSender sender = new FileSender(read[1], Integer.parseInt(read[2]));
                     for (File f : files){
+                        System.out.println(f.toString());
                         byte[] bytes = FileDecompiler.fileToByteArray(f);
                         JSONObject json = new JSONObject();
                         json.put("data", Base64.getEncoder().encodeToString(bytes));
@@ -39,10 +40,10 @@ public class mainClass {
                     String received = "";
                     while((received = receiver.receiveFileFrom()) != null){
                         JSONObject obj = new JSONObject(received);
-//                    System.out.println(obj.get("filename"));
                         String fileName = (String) obj.get("filename");
-                        fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+                        //fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
                         System.out.println(fileName);
+                        FileDecompiler.CreateFileStructure(fileName);
                         FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), fileName);
                     }
 
@@ -53,8 +54,6 @@ public class mainClass {
             e.printStackTrace();
             Scanner scanner = new Scanner(System.in);
             scanner.nextLine();
-            scanner.nextLine();
-            sleep(100000);
         }
 //https://github.com/EliasNorgren/FileTransfer.git
     }
