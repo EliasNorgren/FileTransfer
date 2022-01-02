@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Scanner;
@@ -9,8 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.*;
-
-import static java.lang.Thread.sleep;
 
 public class mainClass {
 
@@ -37,14 +38,21 @@ public class mainClass {
                 case "rec":
                     FileReceiver receiver = new FileReceiver(Integer.parseInt(read[1]));
 
+                    Path recFolder = Paths.get("Received");
+                    if(!Files.exists(recFolder)){
+                        Files.createDirectories(recFolder);
+                    }
+
                     String received = "";
                     while((received = receiver.receiveFileFrom()) != null){
                         JSONObject obj = new JSONObject(received);
                         String fileName = (String) obj.get("filename");
                         //fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
                         System.out.println(fileName);
-                        FileDecompiler.CreateFileStructure(fileName);
-                        FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), fileName);
+                        if(fileName.contains("\\")){
+                            FileDecompiler.CreateFileStructure(fileName);
+                        }
+                        FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), "Received\\" + fileName);
                     }
 
                     receiver.close();
