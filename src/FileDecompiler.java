@@ -10,5 +10,6 @@ public class FileDecompiler {
     public static void writeByteArrayToFile(byte[] bytes, String fileName) throws IOException {
         FileOutputStream fos = new FileOutputStream(fileName);
         fos.write(bytes);
+        fos.close();
     }
 }

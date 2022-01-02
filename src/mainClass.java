@@ -15,18 +15,16 @@ public class mainClass {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] read = br.readLine().split(" ");
         validateData(read);
-        ArrayList<File> files = new ArrayList<>();
-        files.add(new File("Kalimba.mp3"));
-        files.add(new File("Maid with the Flaxen Hair.mp3"));
 
         switch (read[0]){
             case "send":
+                ArrayList<File> files = FileTraverse.traverseFiles(new File(read[3]));
                 FileSender sender = new FileSender(read[1], Integer.parseInt(read[2]));
                 for (File f : files){
                     byte[] bytes = FileDecompiler.fileToByteArray(f);
                     JSONObject json = new JSONObject();
                     json.put("data", Base64.getEncoder().encodeToString(bytes));
-                    json.put("filename", read[3]);
+                    json.put("filename", f.toString());
                     sender.sendStringTo(json.toString());
                 }
                 sender.close();
@@ -35,12 +33,13 @@ public class mainClass {
                 FileReceiver receiver = new FileReceiver(Integer.parseInt(read[1]));
 
                 String received = "";
-                int i = 0;
                 while((received = receiver.receiveFileFrom()) != null){
-                    i++;
                     JSONObject obj = new JSONObject(received);
-                    System.out.println(obj.get("filename"));
-                    FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), i+"asd.mp3");
+//                    System.out.println(obj.get("filename"));
+                    String fileName = (String) obj.get("filename");
+                    fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+                    System.out.println(fileName);
+                    FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), fileName);
                 }
 
                 receiver.close();
