@@ -11,11 +11,15 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import FileHandlers.FileDecompiler;
+import FileHandlers.FileReceiver;
+import FileHandlers.FileSender;
+import FileHandlers.FileTraverse;
 import org.json.*;
 
 public class mainClass {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String[] read = br.readLine().split(" ");
