@@ -50,7 +50,7 @@ public class mainClass {
                         //fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
                         System.out.println(fileName);
                         if(fileName.contains("\\")){
-                            FileDecompiler.CreateFileStructure(fileName);
+                            FileDecompiler.CreateFileStructure("Received\\" + fileName);
                         }
                         FileDecompiler.writeByteArrayToFile(Base64.getDecoder().decode((String)obj.get("data")), "Received\\" + fileName);
                     }
