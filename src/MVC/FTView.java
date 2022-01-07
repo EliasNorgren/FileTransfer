@@ -2,6 +2,7 @@ package MVC;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class FTView extends JFrame{
     private JPanel mainPanel;
@@ -29,7 +30,7 @@ public class FTView extends JFrame{
 
     }
 
-    public int getReceivePortNumber(){
+    public int getReceivePortNumber() throws NumberFormatException{
         return Integer.parseInt(receivePort.getText());
     }
 
@@ -39,5 +40,37 @@ public class FTView extends JFrame{
 
     public void setListenButtonEnabled(boolean enabled){
         listenButton.setEnabled(enabled);
+    }
+
+    public void showDialog(String msg, String title, int messageType) {
+        JOptionPane.showMessageDialog(null, msg, title, messageType);
+    }
+
+    public void printToListen(String text){
+        receiveTextArea.append(text + "\n");
+    }
+
+    public void addSendListener(ActionListener ae) {
+        this.sendButton.addActionListener(ae);
+    }
+
+    public String getSendHostName(){
+        return this.sendIPTextField.getText();
+    }
+
+    public int getSendPortNumber() {
+        return Integer.parseInt(this.sendPortTextField.getText());
+    }
+
+    public File getSendDir() {
+        return new File(this.sendDirTextField.getText());
+    }
+
+    public void setSendButtonEnabled(boolean b) {
+        this.sendButton.setEnabled(b);
+    }
+
+    public void printToSender(String s) {
+        this.sendTextArea.append(s + "\n");
     }
 }

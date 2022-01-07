@@ -55,8 +55,9 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <foreground color="-4475266"/>
-                  <lineWrap value="true"/>
+                  <background color="-1"/>
+                  <foreground color="-16777216"/>
+                  <lineWrap value="false"/>
                 </properties>
               </component>
               <hspacer id="6f4bb">

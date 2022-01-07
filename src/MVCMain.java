@@ -1,5 +1,5 @@
 import MVC.FTController;
-import MVC.FTModel;
+import MVC.ReceiverModel;
 import MVC.FTView;
 
 import javax.swing.*;
@@ -7,7 +7,7 @@ import javax.swing.*;
 public class MVCMain {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new FTController(new FTModel(), new FTView());
+            new FTController(new FTView());
         });
     }
 }

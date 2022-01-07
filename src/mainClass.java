@@ -11,6 +11,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import helpers.FileDecompiler;
+import helpers.FileReceiver;
+import helpers.FileSender;
+import helpers.FileTraverse;
 import org.json.*;
 
 public class mainClass {

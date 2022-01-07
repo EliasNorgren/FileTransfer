@@ -1,3 +1,5 @@
+package helpers;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,8 +19,7 @@ public class FileReceiver {
     }
 
     public String receiveFileFrom() throws IOException {
-        String read = in.readLine();
-        return read;
+        return in.readLine();
     }
 
     public void close() throws IOException {
