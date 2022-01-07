@@ -2,8 +2,6 @@ package MVC;
 
 import helpers.FileDecompiler;
 import helpers.FileReceiver;
-import helpers.FileSender;
-import helpers.FileTraverse;
 import org.json.JSONObject;
 
 import java.io.IOException;

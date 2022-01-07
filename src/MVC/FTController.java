@@ -74,38 +74,6 @@ public class FTController {
         }
     }
 
-    public class sendWorker extends SwingWorker<String, String>{
-
-        String hostName;
-        int portNumber;
-        String dir;
-
-        public sendWorker(String hostName, int portNumber, String dir){
-            this.hostName = hostName;
-            this.portNumber = portNumber;
-            this.dir = dir;
-        }
-
-        @Override
-        protected String doInBackground() {
-            SenderModel sender = new SenderModel();
-            try {
-                sender.connectToReceiver(hostName, portNumber);
-                sender.readFiles(new File(dir));
-                while (sender.hasNext()){
-                    publish(sender.sendNext());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            super.done();
-        }
-    }
 
     private class SendListener implements ActionListener {
         @Override
