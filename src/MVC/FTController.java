@@ -81,7 +81,7 @@ public class FTController {
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
                     long fileSize = fileSizeBytes.getLong(0);
                     System.out.println("FileSize = " + fileSize);
-                    FileDecompiler.CreateFileStructure(fileName);
+                    FileDecompiler.CreateFileStructure("Received\\" + fileName);
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
 //                    byte[] buffer = new byte[1024];
                     int iterations = (int)fileSize / chunkSize;
