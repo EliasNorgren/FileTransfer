@@ -172,16 +172,16 @@ public class FTController {
 
                     RandomAccessFile aFile = new RandomAccessFile(f, "r");
 
-                    byte[] buffer = new byte[chunkSize];
                     int iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
+                        byte[] buffer = new byte[chunkSize];
                         publish("# " + i + " " + iterations);
                         System.out.println("Sent chunk " + i);
                         aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
                     int bytesLeft = (int) size % chunkSize;
-                    byte[] leftOverBytes = new byte[(int) bytesLeft];
+                    byte[] leftOverBytes = new byte[bytesLeft];
                     aFile.read(leftOverBytes,0, bytesLeft);
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
 

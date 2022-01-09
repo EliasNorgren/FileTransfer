@@ -29,12 +29,12 @@ public class FileReceiver2 {
     public ByteBuffer readBytes(int bytes) throws Exception {
         byte[] buffer = new byte[bytes];
         int readBytes = 0;
-        //while(readBytes < bytes){
-            readBytes+= inputStream.read(buffer, 0, bytes);
-        //}
-//        if(readBytes != bytes){
-//            throw new Exception("Correct ammount of bytes not read");
-//        }
+        while(readBytes < bytes){
+            readBytes+= inputStream.read(buffer, readBytes, bytes);
+        }
+        if(readBytes != bytes){
+            throw new Exception("Correct ammount of bytes not read");
+        }
         return ByteBuffer.wrap(buffer);
     }
 }

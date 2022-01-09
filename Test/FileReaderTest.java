@@ -6,9 +6,10 @@ class FileReaderTest {
 
     @Test
     void f1() throws IOException {
-        BufferedWriter bf = new BufferedWriter(new FileOutputStream("data.txt"));
+        BufferedWriter fos = new BufferedWriter(new FileWriter("data"));
         for(int i = 1; i < 4096; i++){
-            fos.write(i);
+            String s = i + "\n";
+            fos.write(s);
         }
         fos.close();
     }
