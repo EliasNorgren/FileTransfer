@@ -32,9 +32,9 @@ public class FileReceiver2 {
         while(readBytes < bytes){
             readBytes+= inputStream.read(buffer, 0, bytes);
         }
-        if(readBytes != bytes){
-            throw new Exception("Correct ammount of bytes not read");
-        }
+//        if(readBytes != bytes){
+//            throw new Exception("Correct ammount of bytes not read");
+//        }
         return ByteBuffer.wrap(buffer);
     }
 }

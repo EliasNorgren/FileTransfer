@@ -85,7 +85,7 @@ public class FTController {
 //                    byte[] buffer = new byte[1024];
                     int iterations = (int)fileSize / chunkSize;
                     for(int j = 0; j < iterations; j++){
-
+                        System.out.println("Received chunk " + i);
                         ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
@@ -176,6 +176,7 @@ public class FTController {
                     int iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
                         publish("# " + i + " " + iterations);
+                        System.out.println("Sent chunk " + i);
                         aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }

@@ -28,7 +28,7 @@ public class Main {
             if(read[0].equals("send")){
 
                 ArrayList<File> files = FileTraverse.traverseFiles(new File("asd.mp4"));
-                FileSender2 sender = new FileSender2("192.168.10.123", 5050);
+                FileSender2 sender = new FileSender2("192.168.10.123", 3030);
 //                    sender.createChannel("0.0.0.0", 3030);
                 ByteBuffer nFiles = ByteBuffer.allocate(4);
                 nFiles.putInt(files.size());
@@ -58,6 +58,7 @@ public class Main {
                     byte[] buffer = new byte[chunkSize];
                     int iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
+                        System.out.println("Sent chunk " + i);
                         aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
