@@ -22,12 +22,20 @@ public class FTView extends JFrame{
 
     public FTView(){
         super("File Transfer");
-
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
         this.pack();
         this.setVisible(true);
+        progressBar1.setMinimum(0);
+        progressBar1.setMaximum(100);
+    }
 
+    public void setProgressBarValue(int n ){
+        progressBar1.setValue(n);
+    }
+
+    public int getProgressbarValue(){
+        return progressBar1.getValue();
     }
 
     public int getReceivePortNumber() throws NumberFormatException{

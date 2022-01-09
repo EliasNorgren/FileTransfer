@@ -5,14 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-
-
 public class FileReceiver2 {
 
-
-    private int offSet = 0;
     private final DataInputStream inputStream;
-
     private final ServerSocket serverSocket;
     private final Socket clntSock;
 

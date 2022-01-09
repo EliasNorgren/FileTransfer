@@ -97,6 +97,7 @@ public class Main {
 //                    byte[] buffer = new byte[1024];
                     int iterations = (int)fileSize / 1024;
                     for(int j = 0; j < iterations; j++){
+
                         ByteBuffer buffer = receiver.readBytes(1024);
                         aFile.write(buffer.array());
                     }

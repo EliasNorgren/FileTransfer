@@ -1,10 +1,22 @@
 package MVC;
 
+import helpers.FileDecompiler;
+import helpers.FileReceiver2;
+import helpers.FileSender2;
+import helpers.FileTraverse;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -43,17 +55,52 @@ public class FTController {
         @Override
         protected String doInBackground() {
             try {
-                ReceiverModel model = new ReceiverModel();
-                publish("Receiver listening on " + recPortNumber);
-                model.listen(recPortNumber);
-                while(model.hasNext()){
-                    publish("File received: " + model.read());
+                Path recFolder = Paths.get("Received");
+                if(!Files.exists(recFolder)){
+                    Files.createDirectories(recFolder);
                 }
-                model.close();
-            } catch (IOException e) {
+
+                FileReceiver2 receiver = new FileReceiver2(recPortNumber);
+                publish("Connection on " + recPortNumber);
+                ByteBuffer nFilesBytes = receiver.readBytes(4);
+                int nFiles =  nFilesBytes.getInt();
+                System.out.println("Nfiles = " + nFiles);
+
+                for(int i = 0; i < nFiles; i++){
+                    ByteBuffer fileNameLenBytes = receiver.readBytes(4);
+                    int fileNameLen = fileNameLenBytes.getInt();
+                    System.out.println("FilenNameLen = " + fileNameLen);
+
+                    ByteBuffer fileNameBytes = receiver.readBytes(fileNameLen);
+                    String fileName = new String(fileNameBytes.array());
+                    System.out.println("Filename = " + fileName);
+                    FileDecompiler.CreateFileStructure(fileName);
+
+                    ByteBuffer fileSizeBytes =  receiver.readBytes(8);
+                    long fileSize = fileSizeBytes.getLong(0);
+                    System.out.println("FileSize = " + fileSize);
+
+                    RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
+//                    byte[] buffer = new byte[1024];
+                    int iterations = (int)fileSize / 1024;
+                    for(int j = 0; j < iterations; j++){
+
+                        ByteBuffer buffer = receiver.readBytes(1024);
+                        aFile.write(buffer.array());
+                    }
+                    int bytesLeft = (int) fileSize % 1024;
+                    ByteBuffer buffer = receiver.readBytes(bytesLeft);
+                    aFile.write(buffer.array());
+
+                    aFile.close();
+                    publish("Received " + fileName);
+                }
+                receiver.close();
+                return "Done!";
+
+            } catch (Exception e) {
                 return e.toString();
             }
-            return "Done!";
         }
 
         @Override
@@ -98,24 +145,66 @@ public class FTController {
 
         @Override
         protected String doInBackground() {
-            SenderModel sender = new SenderModel();
-            sender.readFiles(dir);
             try{
-                sender.connectToReceiver(hostName, port);
-                while(sender.hasNext()){
-                    publish(sender.sendNext());
+                ArrayList<File> files = FileTraverse.traverseFiles(dir);
+                FileSender2 sender = new FileSender2(hostName, port);
+                publish("Connected to " + hostName + " " + port);
+                ByteBuffer nFiles = ByteBuffer.allocate(4);
+                nFiles.putInt(files.size());
+                sender.sendBytes(nFiles);
+
+                for(File f : files){
+                    publish("Sending : " + f.toString());
+                    String filename = f.toString();
+                    ByteBuffer filenameLen = ByteBuffer.allocate(4);
+                    filenameLen.putInt(filename.length());
+                    sender.sendBytes(filenameLen);
+
+                    ByteBuffer filenameBytes = ByteBuffer.allocate(filename.length());
+                    filenameBytes.put(filename.getBytes());
+                    sender.sendBytes(filenameBytes);
+
+                    long size = Files.size(Paths.get(f.toURI()));
+                    ByteBuffer fileSize = ByteBuffer.allocate(8);
+                    fileSize.putLong(size);
+                    sender.sendBytes(fileSize);
+
+                    RandomAccessFile aFile = new RandomAccessFile(f, "r");
+
+                    byte[] buffer = new byte[1024];
+                    int iterations = (int)size / 1024;
+                    for(int i = 0; i < iterations; i++){
+                        publish("# " + i + " " + iterations);
+                        aFile.read(buffer, 0, 1024);
+                        sender.sendBytes(ByteBuffer.wrap(buffer));
+                    }
+                    int bytesLeft = (int) size % 1024;
+                    byte[] leftOverBytes = new byte[(int) bytesLeft];
+                    aFile.read(leftOverBytes,0, bytesLeft);
+                    sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
+
+                    aFile.close();
+
+
                 }
                 sender.close();
+                return "Done!";
             } catch (IOException e) {
-                e.printStackTrace();
+                return e.toString();
             }
-            return "Done!";
         }
 
         @Override
         protected void process(List<String> chunks) {
             for(String s : chunks){
-                view.printToSender(s);
+                if(s.contains("#")){
+                    String[] read = s.split(" ");
+                    int i = Integer.parseInt(read[1]);
+                    int n = Integer.parseInt(read[2]);
+                    view.setProgressBarValue((i/n) * 100);
+                }else{
+                    view.printToSender(s);
+                }
             }
         }
 
