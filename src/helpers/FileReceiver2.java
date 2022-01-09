@@ -30,7 +30,7 @@ public class FileReceiver2 {
         byte[] buffer = new byte[bytes];
         int readBytes = 0;
         while(readBytes < bytes){
-            readBytes+= inputStream.read(buffer, readBytes, bytes);
+            readBytes+= inputStream.read(buffer, readBytes, bytes-readBytes);
         }
         if(readBytes != bytes){
             throw new Exception("Correct ammount of bytes not read");
