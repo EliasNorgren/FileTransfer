@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -80,7 +81,7 @@ public class FTController {
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
                     long fileSize = fileSizeBytes.getLong(0);
                     System.out.println("FileSize = " + fileSize);
-
+                    FileDecompiler.CreateFileStructure(fileName);
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
 //                    byte[] buffer = new byte[1024];
                     int iterations = (int)fileSize / chunkSize;
@@ -100,7 +101,7 @@ public class FTController {
                 return "Done!";
 
             } catch (Exception e) {
-                return e.toString();
+                return e.getMessage();
             }
         }
 
@@ -192,7 +193,7 @@ public class FTController {
                 sender.close();
                 return "Done!";
             } catch (IOException e) {
-                return e.toString();
+                return e.getMessage();
             }
         }
 
