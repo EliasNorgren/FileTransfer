@@ -77,7 +77,7 @@ public class FTController {
                     ByteBuffer fileNameBytes = receiver.readBytes(fileNameLen);
                     String fileName = new String(fileNameBytes.array());
                     System.out.println("Filename = " + fileName);
-                    FileDecompiler.CreateFileStructure(fileName);
+//                    FileDecompiler.CreateFileStructure(fileName);
 
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
                     long fileSize = fileSizeBytes.getLong(0);
