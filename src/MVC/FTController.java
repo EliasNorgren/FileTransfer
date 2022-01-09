@@ -160,10 +160,10 @@ public class FTController {
                     publish("Sending : " + f.toString());
                     String filename = f.toString();
                     ByteBuffer filenameLen = ByteBuffer.allocate(4);
-                    filenameLen.putInt(filename.length());
+                    filenameLen.putInt(filename.getBytes().length);
                     sender.sendBytes(filenameLen);
 
-                    ByteBuffer filenameBytes = ByteBuffer.allocate(filename.length());
+                    ByteBuffer filenameBytes = ByteBuffer.allocate(filename.getBytes().length);
                     filenameBytes.put(filename.getBytes());
                     sender.sendBytes(filenameBytes);
 
