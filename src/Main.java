@@ -17,6 +17,8 @@ import org.json.*;
 
 public class Main {
 
+    private static final int chunkSize = 8192;
+
     public static void main(String[] args) {
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -25,8 +27,8 @@ public class Main {
 
             if(read[0].equals("send")){
 
-                ArrayList<File> files = FileTraverse.traverseFiles(new File("film.mp4"));
-                FileSender2 sender = new FileSender2("0.0.0.0", 3030);
+                ArrayList<File> files = FileTraverse.traverseFiles(new File("asd.mp4"));
+                FileSender2 sender = new FileSender2("192.168.10.123", 5050);
 //                    sender.createChannel("0.0.0.0", 3030);
                 ByteBuffer nFiles = ByteBuffer.allocate(4);
                 nFiles.putInt(files.size());
@@ -53,13 +55,13 @@ public class Main {
 
                     RandomAccessFile aFile = new RandomAccessFile(f, "r");
 
-                    byte[] buffer = new byte[1024];
-                    int iterations = (int)size / 1024;
+                    byte[] buffer = new byte[chunkSize];
+                    int iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
-                        aFile.read(buffer, 0, 1024);
+                        aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
-                    int bytesLeft = (int) size % 1024;
+                    int bytesLeft = (int) size % chunkSize;
                     byte[] leftOverBytes = new byte[(int) bytesLeft];
                     aFile.read(leftOverBytes,0, bytesLeft);
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
@@ -95,13 +97,13 @@ public class Main {
 
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
 //                    byte[] buffer = new byte[1024];
-                    int iterations = (int)fileSize / 1024;
+                    int iterations = (int)fileSize / chunkSize;
                     for(int j = 0; j < iterations; j++){
 
-                        ByteBuffer buffer = receiver.readBytes(1024);
+                        ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
-                    int bytesLeft = (int) fileSize % 1024;
+                    int bytesLeft = (int) fileSize % chunkSize;
                     ByteBuffer buffer = receiver.readBytes(bytesLeft);
                     aFile.write(buffer.array());
 

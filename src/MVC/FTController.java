@@ -24,6 +24,7 @@ public class FTController {
 
     private final FTView view;
     private boolean workerFailed = false;
+    private final int chunkSize = 8192;
 
     public FTController(FTView ftView) {
         this.view = ftView;
@@ -82,13 +83,13 @@ public class FTController {
 
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
 //                    byte[] buffer = new byte[1024];
-                    int iterations = (int)fileSize / 1024;
+                    int iterations = (int)fileSize / chunkSize;
                     for(int j = 0; j < iterations; j++){
 
-                        ByteBuffer buffer = receiver.readBytes(1024);
+                        ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
-                    int bytesLeft = (int) fileSize % 1024;
+                    int bytesLeft = (int) fileSize % chunkSize;
                     ByteBuffer buffer = receiver.readBytes(bytesLeft);
                     aFile.write(buffer.array());
 
@@ -171,14 +172,14 @@ public class FTController {
 
                     RandomAccessFile aFile = new RandomAccessFile(f, "r");
 
-                    byte[] buffer = new byte[1024];
-                    int iterations = (int)size / 1024;
+                    byte[] buffer = new byte[chunkSize];
+                    int iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
                         publish("# " + i + " " + iterations);
-                        aFile.read(buffer, 0, 1024);
+                        aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
-                    int bytesLeft = (int) size % 1024;
+                    int bytesLeft = (int) size % chunkSize;
                     byte[] leftOverBytes = new byte[(int) bytesLeft];
                     aFile.read(leftOverBytes,0, bytesLeft);
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
