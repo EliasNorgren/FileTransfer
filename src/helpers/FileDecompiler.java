@@ -12,12 +12,15 @@ public class FileDecompiler {
     }
 
     public static void writeByteArrayToFile(byte[] bytes, String fileName) throws IOException {
-        FileOutputStream fos = new FileOutputStream(new File(fileName));
+        FileOutputStream fos = new FileOutputStream(fileName);
         fos.write(bytes);
         fos.close();
     }
 
     public static void CreateFileStructure(String fileName) throws IOException {
+        if(!fileName.contains("\\")){
+            return;
+        }
         fileName = fileName.substring(0, fileName.lastIndexOf('\\'));
         Path p = Paths.get(fileName);
         if(!Files.exists(p)){
