@@ -31,6 +31,7 @@ public class FTController {
         this.view = ftView;
         view.addListenButtonListener(new ListenListener());
         view.addSendListener(new SendListener());
+
     }
     private class ListenListener implements ActionListener {
         @Override
