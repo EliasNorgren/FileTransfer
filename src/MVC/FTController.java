@@ -85,7 +85,7 @@ public class FTController {
 //                    byte[] buffer = new byte[1024];
                     int iterations = (int)fileSize / chunkSize;
                     for(int j = 0; j < iterations; j++){
-                        System.out.println("Received chunk " + i);
+//                        System.out.println("Received chunk " + i);
                         ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
@@ -176,7 +176,7 @@ public class FTController {
                     for(int i = 0; i < iterations; i++){
                         byte[] buffer = new byte[chunkSize];
                         publish("# " + i + " " + iterations);
-                        System.out.println("Sent chunk " + i);
+//                        System.out.println("Sent chunk " + i);
                         aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
@@ -201,9 +201,9 @@ public class FTController {
             for(String s : chunks){
                 if(s.contains("#")){
                     String[] read = s.split(" ");
-                    int i = Integer.parseInt(read[1]);
-                    int n = Integer.parseInt(read[2]);
-                    view.setProgressBarValue((i/n) * 100);
+                    double i = Integer.parseInt(read[1]);
+                    double n = Integer.parseInt(read[2]);
+                    view.setProgressBarValue((int)((i/n) * 100));
                 }else{
                     view.printToSender(s);
                 }

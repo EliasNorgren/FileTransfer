@@ -28,6 +28,8 @@ public class FTView extends JFrame{
         this.setVisible(true);
         progressBar1.setMinimum(0);
         progressBar1.setMaximum(100);
+//        progressBar1.setValue(50);
+        progressBar1.setValue(0);
     }
 
     public void setProgressBarValue(int n ){
