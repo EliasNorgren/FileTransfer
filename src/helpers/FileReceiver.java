@@ -3,28 +3,38 @@ package helpers;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class FileReceiver {
 
+    private final DataInputStream inputStream;
     private final ServerSocket serverSocket;
     private final Socket clntSock;
-    private final BufferedReader in;
 
     public FileReceiver(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         System.out.println("Receiver Listening on port " + port);
         clntSock = serverSocket.accept();
         System.out.println("Client connected " + clntSock.getInetAddress() + " " + clntSock.getPort());
-        in = new BufferedReader(new InputStreamReader(clntSock.getInputStream()));
+        inputStream = new DataInputStream(clntSock.getInputStream());
     }
 
-    public String receiveFileFrom() throws IOException {
-        return in.readLine();
-    }
 
     public void close() throws IOException {
-        in.close();
         clntSock.close();
         serverSocket.close();
+        inputStream.close();
+    }
+
+    public ByteBuffer readBytes(int bytes) throws Exception {
+        byte[] buffer = new byte[bytes];
+        int readBytes = 0;
+        while(readBytes < bytes){
+            readBytes+= inputStream.read(buffer, readBytes, bytes-readBytes);
+        }
+        if(readBytes != bytes){
+            throw new Exception("Correct ammount of bytes not read");
+        }
+        return ByteBuffer.wrap(buffer);
     }
 }

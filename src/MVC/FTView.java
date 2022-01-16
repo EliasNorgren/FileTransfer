@@ -16,7 +16,7 @@ public class FTView extends JFrame{
     private JTextField sendPortTextField;
     private JTextField sendDirTextField;
     private JButton sendButton;
-    private JProgressBar progressBar1;
+    private JProgressBar sendProgressBar;
     private JLabel statusText;
     private JTextArea sendTextArea;
 
@@ -26,18 +26,20 @@ public class FTView extends JFrame{
         this.setContentPane(mainPanel);
         this.pack();
         this.setVisible(true);
-        progressBar1.setMinimum(0);
-        progressBar1.setMaximum(100);
-//        progressBar1.setValue(50);
-        progressBar1.setValue(0);
+        sendProgressBar.setMinimum(0);
+        sendProgressBar.setMaximum(100);
+//        sendProgressBar.setValue(50);
+
+        sendProgressBar.setValue(0);
     }
 
     public void setProgressBarValue(int n ){
-        progressBar1.setValue(n);
+        sendProgressBar.setValue(n);
+        sendProgressBar.setString((n / 100.0) + " %");
     }
 
     public int getProgressbarValue(){
-        return progressBar1.getValue();
+        return sendProgressBar.getValue();
     }
 
     public int getReceivePortNumber() throws NumberFormatException{
@@ -83,4 +85,5 @@ public class FTView extends JFrame{
     public void printToSender(String s) {
         this.sendTextArea.append(s + "\n");
     }
+
 }

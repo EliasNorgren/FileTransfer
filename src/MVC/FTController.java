@@ -1,15 +1,14 @@
 package MVC;
 
 import helpers.FileDecompiler;
-import helpers.FileReceiver2;
-import helpers.FileSender2;
+import helpers.FileReceiver;
+import helpers.FileSender;
 import helpers.FileTraverse;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -63,7 +61,7 @@ public class FTController {
                     Files.createDirectories(recFolder);
                 }
 
-                FileReceiver2 receiver = new FileReceiver2(recPortNumber);
+                FileReceiver receiver = new FileReceiver(recPortNumber);
                 publish("Connection on " + recPortNumber);
                 ByteBuffer nFilesBytes = receiver.readBytes(4);
                 int nFiles =  nFilesBytes.getInt();
@@ -150,7 +148,7 @@ public class FTController {
         protected String doInBackground() {
             try{
                 ArrayList<File> files = FileTraverse.traverseFiles(dir);
-                FileSender2 sender = new FileSender2(hostName, port);
+                FileSender sender = new FileSender(hostName, port);
                 publish("Connected to " + hostName + " " + port);
                 ByteBuffer nFiles = ByteBuffer.allocate(4);
                 nFiles.putInt(files.size());
@@ -191,6 +189,7 @@ public class FTController {
 
 
                 }
+                sender.flush();
                 sender.close();
                 return "Done!";
             } catch (IOException e) {
@@ -215,6 +214,7 @@ public class FTController {
         @Override
         protected void done() {
             try {
+                view.setProgressBarValue(100);
                 view.printToSender(get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();

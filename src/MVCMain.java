@@ -1,5 +1,4 @@
 import MVC.FTController;
-import MVC.ReceiverModel;
 import MVC.FTView;
 
 import javax.swing.*;

@@ -1,26 +1,29 @@
 package helpers;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
+import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;;
 
 public class FileSender {
+
+    private final DataOutputStream outputStream;
     private final Socket socket;
-    private final PrintWriter out;
 
     public FileSender(String hostname, int port) throws IOException {
         socket = new Socket(hostname, port);
-        out = new PrintWriter(socket.getOutputStream(), true);
+        outputStream = new DataOutputStream(socket.getOutputStream());
     }
 
-    public void sendStringTo(String msg) {
-        out.println(msg);
+    public void sendBytes(ByteBuffer bytes) throws IOException {
+        outputStream.write(bytes.array());
     }
 
     public void close() throws IOException {
-        out.close();
         socket.close();
+        outputStream.close();
+    }
+
+    public void flush() throws IOException {
+        outputStream.flush();
     }
 }
