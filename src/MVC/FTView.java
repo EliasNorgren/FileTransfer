@@ -35,7 +35,7 @@ public class FTView extends JFrame{
 
     public void setProgressBarValue(int n ){
         sendProgressBar.setValue(n);
-        sendProgressBar.setString((int)(n / 100.0) * 100 + " %");
+        sendProgressBar.setString(n + " %");
     }
 
     public int getProgressbarValue(){

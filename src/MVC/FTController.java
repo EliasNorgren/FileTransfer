@@ -82,6 +82,7 @@ public class FTController {
 
                     ByteBuffer fileNameBytes = receiver.readBytes(fileNameLen);
                     String fileName = new String(fileNameBytes.array());
+                    
                     System.out.println("Filename = " + fileName);
 
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
