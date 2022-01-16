@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 public class FTController {
 
     private final FTView view;
-    private boolean workerFailed = false;
     private final int chunkSize = 8192;
 
     public FTController(FTView ftView) {
@@ -63,7 +62,15 @@ public class FTController {
                 }
 
                 FileReceiver receiver = new FileReceiver(recPortNumber);
-                publish("Connection on " + recPortNumber);
+                publish("Listening on port " + recPortNumber);
+                receiver.accept();
+                String connection = receiver.getConnection();
+                if(!view.showConfirmDialog("Accept incomming connection from " + connection,
+                        "Incoming connection", JOptionPane.YES_NO_OPTION)){
+                    return "Connection declined";
+                }
+
+                publish("Connection from " + connection);
                 ByteBuffer nFilesBytes = receiver.readBytes(4);
                 int nFiles =  nFilesBytes.getInt();
                 System.out.println("Nfiles = " + nFiles);
@@ -76,17 +83,15 @@ public class FTController {
                     ByteBuffer fileNameBytes = receiver.readBytes(fileNameLen);
                     String fileName = new String(fileNameBytes.array());
                     System.out.println("Filename = " + fileName);
-//                    FileDecompiler.CreateFileStructure(fileName);
 
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
                     long fileSize = fileSizeBytes.getLong(0);
                     System.out.println("FileSize = " + fileSize);
                     FileDecompiler.CreateFileStructure("Received\\" + fileName);
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
-//                    byte[] buffer = new byte[1024];
+
                     int iterations = (int)fileSize / chunkSize;
                     for(int j = 0; j < iterations; j++){
-//                        System.out.println("Received chunk " + i);
                         ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
@@ -129,6 +134,7 @@ public class FTController {
         public void actionPerformed(ActionEvent e) {
             try{
                 view.setSendButtonEnabled(false);
+                view.setProgressBarValue(0);
                 SendWorker worker = new SendWorker(view.getSendHostName(), view.getSendPortNumber(), view.getSendDir());
                 worker.execute();
             }catch (NumberFormatException err){
@@ -183,7 +189,6 @@ public class FTController {
                     for(int i = 0; i < iterations; i++){
                         byte[] buffer = new byte[chunkSize];
                         publish("# " + i + " " + iterations);
-//                        System.out.println("Sent chunk " + i);
                         aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
@@ -193,8 +198,6 @@ public class FTController {
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
 
                     aFile.close();
-
-
                 }
                 sender.flush();
                 sender.close();

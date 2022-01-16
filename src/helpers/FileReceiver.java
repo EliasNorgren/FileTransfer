@@ -7,18 +7,20 @@ import java.nio.ByteBuffer;
 
 public class FileReceiver {
 
-    private final DataInputStream inputStream;
+    private DataInputStream inputStream;
     private final ServerSocket serverSocket;
-    private final Socket clntSock;
+    private Socket clntSock;
 
     public FileReceiver(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         System.out.println("Receiver Listening on port " + port);
+    }
+
+    public void accept() throws IOException {
         clntSock = serverSocket.accept();
         System.out.println("Client connected " + clntSock.getInetAddress() + " " + clntSock.getPort());
         inputStream = new DataInputStream(clntSock.getInputStream());
     }
-
 
     public void close() throws IOException {
         clntSock.close();
@@ -36,5 +38,9 @@ public class FileReceiver {
             throw new Exception("Correct ammount of bytes not read");
         }
         return ByteBuffer.wrap(buffer);
+    }
+
+    public String getConnection() {
+        return clntSock.getInetAddress() + " " + clntSock.getPort();
     }
 }

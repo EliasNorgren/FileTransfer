@@ -90,6 +90,7 @@
                     <constraints/>
                     <properties>
                       <background color="-1"/>
+                      <editable value="false"/>
                       <foreground color="-16777216"/>
                       <lineWrap value="false"/>
                     </properties>
@@ -222,6 +223,7 @@
                   <component id="bb30e" class="javax.swing.JTextArea" binding="sendTextArea">
                     <constraints/>
                     <properties>
+                      <editable value="false"/>
                       <foreground color="-16777216"/>
                       <lineWrap value="true"/>
                     </properties>

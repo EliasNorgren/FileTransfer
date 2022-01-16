@@ -56,7 +56,13 @@ public class FTView extends JFrame{
 
     public void showDialog(String msg, String title, int messageType) {
         JOptionPane.showMessageDialog(null, msg, title, messageType);
+
     }
+
+    public boolean showConfirmDialog(String msg, String title, int messageType) {
+        return JOptionPane.showConfirmDialog(null, msg, title, messageType) == 0;
+    }
+
 
     public void printToListen(String text){
         receiveTextArea.append(text + "\n");
