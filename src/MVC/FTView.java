@@ -35,7 +35,7 @@ public class FTView extends JFrame{
 
     public void setProgressBarValue(int n ){
         sendProgressBar.setValue(n);
-        sendProgressBar.setString((n / 100.0) + " %");
+        sendProgressBar.setString((int)(n / 100.0) * 100 + " %");
     }
 
     public int getProgressbarValue(){
@@ -70,11 +70,11 @@ public class FTView extends JFrame{
         return this.sendIPTextField.getText();
     }
 
-    public int getSendPortNumber() {
+    public int getSendPortNumber() throws NumberFormatException{
         return Integer.parseInt(this.sendPortTextField.getText());
     }
 
-    public File getSendDir() {
+    public File getSendDir() throws NullPointerException{
         return new File(this.sendDirTextField.getText());
     }
 

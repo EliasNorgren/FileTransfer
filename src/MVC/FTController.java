@@ -41,6 +41,7 @@ public class FTController {
             } catch (NumberFormatException ex) {
                 view.printToListen("ERROR ");
                 view.printToListen(ex.toString());
+                view.setListenButtonEnabled(true);
             }
         }
     }
@@ -126,9 +127,15 @@ public class FTController {
     private class SendListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            view.setSendButtonEnabled(false);
-            SendWorker worker = new SendWorker(view.getSendHostName(), view.getSendPortNumber(), view.getSendDir());
-            worker.execute();
+            try{
+                view.setSendButtonEnabled(false);
+                SendWorker worker = new SendWorker(view.getSendHostName(), view.getSendPortNumber(), view.getSendDir());
+                worker.execute();
+            }catch (NumberFormatException err){
+                view.printToSender("ERROR ");
+                view.printToSender(err.toString());
+                view.setSendButtonEnabled(true);
+            }
         }
     }
 
