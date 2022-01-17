@@ -22,13 +22,16 @@ import java.util.concurrent.ExecutionException;
 public class FTController {
 
     private final FTView view;
-    private final int chunkSize = 8192;
+//    private final int chunkSize = 8192;
+    private final long chunkSize;
 
     public FTController(FTView ftView) {
         this.view = ftView;
         view.addListenButtonListener(new ListenListener());
         view.addSendListener(new SendListener());
 
+        System.out.println(Runtime.getRuntime().totalMemory() + "\n" + Runtime.getRuntime().maxMemory() + "\n" + Runtime.getRuntime().freeMemory());
+        chunkSize = (long)(Runtime.getRuntime().freeMemory() * 0.9);
     }
     private class ListenListener implements ActionListener {
         @Override
@@ -91,13 +94,13 @@ public class FTController {
                     FileDecompiler.CreateFileStructure("Received\\" + fileName);
                     RandomAccessFile aFile = new RandomAccessFile("Received\\" + new File(fileName), "rw");
 
-                    int iterations = (int)fileSize / chunkSize;
+                    int iterations = (int)(fileSize / chunkSize);
                     for(int j = 0; j < iterations; j++){
-                        ByteBuffer buffer = receiver.readBytes(chunkSize);
+                        ByteBuffer buffer = receiver.readBytes((int) chunkSize);
                         aFile.write(buffer.array());
                     }
-                    int bytesLeft = (int) fileSize % chunkSize;
-                    ByteBuffer buffer = receiver.readBytes(bytesLeft);
+                    long bytesLeft = fileSize % chunkSize;
+                    ByteBuffer buffer = receiver.readBytes((int) bytesLeft);
                     aFile.write(buffer.array());
 
                     aFile.close();
@@ -186,16 +189,16 @@ public class FTController {
 
                     RandomAccessFile aFile = new RandomAccessFile(f, "r");
 
-                    int iterations = (int)size / chunkSize;
+                    long iterations = (int)size / chunkSize;
                     for(int i = 0; i < iterations; i++){
-                        byte[] buffer = new byte[chunkSize];
+                        byte[] buffer = new byte[(int) chunkSize];
                         publish("# " + i + " " + iterations);
-                        aFile.read(buffer, 0, chunkSize);
+                        aFile.read(buffer, 0, (int) chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
-                    int bytesLeft = (int) size % chunkSize;
-                    byte[] leftOverBytes = new byte[bytesLeft];
-                    aFile.read(leftOverBytes,0, bytesLeft);
+                    long bytesLeft = size % chunkSize;
+                    byte[] leftOverBytes = new byte[(int) bytesLeft];
+                    aFile.read(leftOverBytes,0, (int) bytesLeft);
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
 
                     aFile.close();
