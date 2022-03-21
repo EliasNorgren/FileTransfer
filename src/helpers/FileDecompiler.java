@@ -18,10 +18,10 @@ public class FileDecompiler {
     }
 
     public static void CreateFileStructure(String fileName) throws IOException {
-        if(!fileName.contains("\\")){
+        if(!fileName.contains("/")){
             return;
         }
-        fileName = fileName.substring(0, fileName.lastIndexOf('\\'));
+        fileName = fileName.substring(0, fileName.lastIndexOf('/'));
         Path p = Paths.get(fileName);
         if(!Files.exists(p)){
             Files.createDirectories(p);
