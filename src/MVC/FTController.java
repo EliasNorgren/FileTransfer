@@ -24,7 +24,8 @@ public class FTController {
     private final FTView view;
 //    private final int chunkSize = 8192;
     private final long chunkSize;
-    private String forwardOrBackSlash;
+    private final String forwardOrBackSlash;
+    private final String wrongSlash;
 
     public FTController(FTView ftView) {
         this.view = ftView;
@@ -34,7 +35,8 @@ public class FTController {
         System.out.println(Runtime.getRuntime().totalMemory() / 1000 + "\n" + Runtime.getRuntime().maxMemory() /1000 + "\n" + Runtime.getRuntime().freeMemory() /1000);
         chunkSize = (long)(Runtime.getRuntime().freeMemory() * 0.9);
         String os = System.getProperty("os.name");
-        forwardOrBackSlash = os.contains("Windows") ? "/" : "\\";
+        forwardOrBackSlash = os.contains("Windows") ? "\\" : "/";
+        wrongSlash = forwardOrBackSlash.equals("\\") ? "/" : "\\";
         System.out.println("ForwardOrBackslash = " + forwardOrBackSlash);
 
     }
@@ -90,8 +92,11 @@ public class FTController {
 
                     ByteBuffer fileNameBytes = receiver.readBytes(fileNameLen);
                     String fileName = new String(fileNameBytes.array());
-                    
                     System.out.println("Filename = " + fileName);
+                    if(!fileName.contains(forwardOrBackSlash) && fileName.contains(wrongSlash)){
+                        fileName = fileName.replaceAll(wrongSlash, forwardOrBackSlash);
+                    }
+                    System.out.println("OS-Transformed Filename = " + fileName);
 
                     ByteBuffer fileSizeBytes =  receiver.readBytes(8);
                     long fileSize = fileSizeBytes.getLong(0);
