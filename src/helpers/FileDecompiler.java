@@ -17,11 +17,11 @@ public class FileDecompiler {
         fos.close();
     }
 
-    public static void CreateFileStructure(String fileName) throws IOException {
-        if(!fileName.contains("/")){
+    public static void CreateFileStructure(String fileName, String forwardOrBackSlash) throws IOException {
+        if(!fileName.contains(forwardOrBackSlash)){
             return;
         }
-        fileName = fileName.substring(0, fileName.lastIndexOf('/'));
+        fileName = fileName.substring(0, fileName.lastIndexOf(forwardOrBackSlash));
         Path p = Paths.get(fileName);
         if(!Files.exists(p)){
             Files.createDirectories(p);
