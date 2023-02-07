@@ -48,6 +48,7 @@ public class FTController {
                 ListenWorker worker = new ListenWorker(view.getReceivePortNumber());
                 worker.execute();
             } catch (NumberFormatException ex) {
+                ex.printStackTrace();
                 view.printToListen("ERROR ");
                 view.printToListen(ex.toString());
                 view.setListenButtonEnabled(true);
@@ -120,7 +121,7 @@ public class FTController {
                 return "Done!";
 
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
                 return e.getMessage();
             }
         }
@@ -151,8 +152,10 @@ public class FTController {
                 view.setSendButtonEnabled(false);
                 view.setProgressBarValue(0);
                 SendWorker worker = new SendWorker(view.getSendHostName(), view.getSendPortNumber(), view.getSendDir());
+                System.out.println("Worker Starting");
                 worker.execute();
             }catch (NumberFormatException err){
+                err.printStackTrace();
                 view.printToSender("ERROR ");
                 view.printToSender(err.toString());
                 view.setSendButtonEnabled(true);
@@ -218,6 +221,7 @@ public class FTController {
                 sender.close();
                 return "Done!";
             } catch (IOException e) {
+                e.printStackTrace();
                 return e.getMessage();
             }
         }
