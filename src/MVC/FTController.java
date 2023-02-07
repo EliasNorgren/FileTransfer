@@ -110,12 +110,13 @@ public class FTController {
                     int iterations = toIntExact(fileSize / chunkSize);
                     System.out.println("iteratiosn = " + iterations);
                     for(int j = 0; j < iterations; j++){
-                        System.out.println("i = " + i);
+                        System.out.println("i = " + j);
                         ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
-                    System.out.println("Reading leftovers");
+
                     int bytesLeft = toIntExact(fileSize % chunkSize);
+                    System.out.println("Reading leftovers = " + bytesLeft);
                     ByteBuffer buffer = receiver.readBytes(bytesLeft);
                     aFile.write(buffer.array());
 
