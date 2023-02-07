@@ -18,12 +18,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import static java.lang.Math.toIntExact;
 
 public class FTController {
 
     private final FTView view;
 //    private final int chunkSize = 8192;
-    private final long chunkSize;
+    private final int chunkSize;
     private final String forwardOrBackSlash;
     private final String wrongSlash;
 
@@ -33,7 +34,7 @@ public class FTController {
         view.addSendListener(new SendListener());
 
         System.out.println(Runtime.getRuntime().totalMemory() / 1000 + "\n" + Runtime.getRuntime().maxMemory() /1000 + "\n" + Runtime.getRuntime().freeMemory() /1000);
-        chunkSize = (long)(Runtime.getRuntime().freeMemory() * 0.9);
+        chunkSize = toIntExact((long) (Runtime.getRuntime().freeMemory() * 0.9));
         String os = System.getProperty("os.name");
         forwardOrBackSlash = os.contains("Windows") ? "\\" : "/";
         wrongSlash = forwardOrBackSlash.equals("\\") ? "/" : "\\";
@@ -105,9 +106,9 @@ public class FTController {
                     FileDecompiler.CreateFileStructure("Received" + forwardOrBackSlash + fileName, forwardOrBackSlash);
                     RandomAccessFile aFile = new RandomAccessFile("Received" + forwardOrBackSlash + new File(fileName), "rw");
 
-                    int iterations = (int)(fileSize / chunkSize);
+                    int iterations = toIntExact(fileSize / chunkSize);
                     for(int j = 0; j < iterations; j++){
-                        ByteBuffer buffer = receiver.readBytes((int) chunkSize);
+                        ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
                     long bytesLeft = fileSize % chunkSize;
@@ -182,6 +183,7 @@ public class FTController {
                 FileSender sender = new FileSender(hostName, port);
                 publish("Connected to " + hostName + " " + port);
                 ByteBuffer nFiles = ByteBuffer.allocate(4);
+                System.out.println("nFiles = " + files.size());
                 nFiles.putInt(files.size());
                 sender.sendBytes(nFiles);
 
@@ -203,16 +205,16 @@ public class FTController {
 
                     RandomAccessFile aFile = new RandomAccessFile(f, "r");
 
-                    long iterations = (int)size / chunkSize;
-                    for(int i = 0; i < iterations; i++){
-                        byte[] buffer = new byte[(int) chunkSize];
+                    long iterations = size / chunkSize;
+                    for(long i = 0; i < iterations; i++){
+                        byte[] buffer = new byte[chunkSize];
                         publish("# " + i + " " + iterations);
-                        aFile.read(buffer, 0, (int) chunkSize);
+                        aFile.read(buffer, 0, chunkSize);
                         sender.sendBytes(ByteBuffer.wrap(buffer));
                     }
-                    long bytesLeft = size % chunkSize;
-                    byte[] leftOverBytes = new byte[(int) bytesLeft];
-                    aFile.read(leftOverBytes,0, (int) bytesLeft);
+                    int bytesLeft = toIntExact(size % chunkSize);
+                    byte[] leftOverBytes = new byte[bytesLeft];
+                    aFile.read(leftOverBytes,0, bytesLeft);
                     sender.sendBytes(ByteBuffer.wrap(leftOverBytes));
 
                     aFile.close();
