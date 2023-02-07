@@ -33,8 +33,9 @@ public class FTController {
         view.addListenButtonListener(new ListenListener());
         view.addSendListener(new SendListener());
 
-        System.out.println(Runtime.getRuntime().totalMemory() / 1000 + "\n" + Runtime.getRuntime().maxMemory() /1000 + "\n" + Runtime.getRuntime().freeMemory() /1000);
+        //System.out.println(Runtime.getRuntime().totalMemory() / 1000 + "\n" + Runtime.getRuntime().maxMemory() /1000 + "\n" + Runtime.getRuntime().freeMemory() /1000);
         chunkSize = toIntExact((long) (Runtime.getRuntime().freeMemory() * 0.9));
+        System.out.println("ChunkSize = " + chunkSize);
         String os = System.getProperty("os.name");
         forwardOrBackSlash = os.contains("Windows") ? "\\" : "/";
         wrongSlash = forwardOrBackSlash.equals("\\") ? "/" : "\\";
@@ -107,12 +108,15 @@ public class FTController {
                     RandomAccessFile aFile = new RandomAccessFile("Received" + forwardOrBackSlash + new File(fileName), "rw");
 
                     int iterations = toIntExact(fileSize / chunkSize);
+                    System.out.println("iteratiosn = " + iterations);
                     for(int j = 0; j < iterations; j++){
+                        System.out.println("i = " + i);
                         ByteBuffer buffer = receiver.readBytes(chunkSize);
                         aFile.write(buffer.array());
                     }
-                    long bytesLeft = fileSize % chunkSize;
-                    ByteBuffer buffer = receiver.readBytes((int) bytesLeft);
+                    System.out.println("Reading leftovers");
+                    int bytesLeft = toIntExact(fileSize % chunkSize);
+                    ByteBuffer buffer = receiver.readBytes(bytesLeft);
                     aFile.write(buffer.array());
 
                     aFile.close();
